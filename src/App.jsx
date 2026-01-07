@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TaskItem from "./Components/TaskItem";
 
 function App() {
   const [newTask, setNewTask] = useState("");
   const [tasks, setTasks] = useState([]);
 
+  useEffect(()=>{
+    localStorage.setItem("my_todo_list", JSON.stringify(tasks))
+  },[tasks])
+
   const handleAddTask = () => {
     if (newTask.trim().length > 0) {
-      setTasks((prev) => [...prev, { text: newTask, completed: false, id:Date.now()}]);
+      setTasks((prev) => [
+        ...prev,
+        { text: newTask, completed: false, id: Date.now() },
+      ]);
       setNewTask("");
     }
     console.log(tasks);
@@ -40,15 +48,12 @@ function App() {
       <button onClick={handleAddTask}>Add Task</button>
       <ul>
         {tasks.map((task) => (
-          <li key={task.id}>
-            <span
-              style={{ textDecoration: task.completed ? "line-through" : "" }}
-            >
-              {task.text}
-            </span>{" "}
-            <button onClick={() => handleCompleteTask(task.id)}>Complete</button>{" "}
-            <button onClick={() => handleDeleteTask(task.id)}>Remove</button>
-          </li>
+          <TaskItem
+            key={task.id}
+            task={task}
+            onDelete={handleDeleteTask}
+            onComplete={handleCompleteTask}
+          />
         ))}
       </ul>
     </>
