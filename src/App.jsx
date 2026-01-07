@@ -3,7 +3,14 @@ import TaskItem from "./Components/TaskItem";
 
 function App() {
   const [newTask, setNewTask] = useState("");
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(()=> {
+    const saved = localStorage.getItem("my_todo_list")
+    if (saved) {
+      return JSON.parse(saved);
+    } else {
+      return [];
+    }
+  });
 
   useEffect(()=>{
     localStorage.setItem("my_todo_list", JSON.stringify(tasks))
@@ -39,6 +46,7 @@ function App() {
   return (
     <>
       <input
+        onKeyDown={(e)=>e.key==="Enter"?handleAddTask():null}
         value={newTask}
         type="text"
         onChange={(e) => {
