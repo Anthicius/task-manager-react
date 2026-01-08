@@ -24,6 +24,7 @@ function App() {
         onKeyDown={(e) => (e.key === "Enter" ? onAdd() : null)}
         value={newTask}
         type="text"
+        placeholder="Enter your Todo task"
         onChange={(e) => {
           setNewTask(e.target.value);
         }}
