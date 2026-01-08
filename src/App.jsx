@@ -3,8 +3,8 @@ import TaskItem from "./Components/TaskItem";
 
 function App() {
   const [newTask, setNewTask] = useState("");
-  const [tasks, setTasks] = useState(()=> {
-    const saved = localStorage.getItem("my_todo_list")
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem("my_todo_list");
     if (saved) {
       return JSON.parse(saved);
     } else {
@@ -12,9 +12,9 @@ function App() {
     }
   });
 
-  useEffect(()=>{
-    localStorage.setItem("my_todo_list", JSON.stringify(tasks))
-  },[tasks])
+  useEffect(() => {
+    localStorage.setItem("my_todo_list", JSON.stringify(tasks));
+  }, [tasks]);
 
   const handleAddTask = () => {
     if (newTask.trim().length > 0) {
@@ -43,10 +43,22 @@ function App() {
     );
   };
 
+  const handleTaskEditSave = (editTaskValue, taskId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, text: editTaskValue };
+        } else {
+          return task;
+        }
+      })
+    );
+  };
+
   return (
     <>
       <input
-        onKeyDown={(e)=>e.key==="Enter"?handleAddTask():null}
+        onKeyDown={(e) => (e.key === "Enter" ? handleAddTask() : null)}
         value={newTask}
         type="text"
         onChange={(e) => {
@@ -61,6 +73,7 @@ function App() {
             task={task}
             onDelete={handleDeleteTask}
             onComplete={handleCompleteTask}
+            onTaskEditSave={handleTaskEditSave}
           />
         ))}
       </ul>
