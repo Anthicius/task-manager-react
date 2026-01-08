@@ -1,71 +1,34 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TaskItem from "./Components/TaskItem";
+import useTodos from "./hooks/useTodos";
 
 function App() {
   const [newTask, setNewTask] = useState("");
-  const [tasks, setTasks] = useState(() => {
-    const saved = localStorage.getItem("my_todo_list");
-    if (saved) {
-      return JSON.parse(saved);
-    } else {
-      return [];
-    }
-  });
+  const {
+    tasks,
+    setTasks,
+    handleAddTask,
+    handleDeleteTask,
+    handleCompleteTask,
+    handleTaskEditSave,
+  } = useTodos();
 
-  useEffect(() => {
-    localStorage.setItem("my_todo_list", JSON.stringify(tasks));
-  }, [tasks]);
-
-  const handleAddTask = () => {
-    if (newTask.trim().length > 0) {
-      setTasks((prev) => [
-        ...prev,
-        { text: newTask, completed: false, id: Date.now() },
-      ]);
-      setNewTask("");
-    }
-    console.log(tasks);
-  };
-
-  const handleDeleteTask = (taskId) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-  };
-
-  const handleCompleteTask = (taskId) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          return { ...task, completed: !task.completed };
-        } else {
-          return task;
-        }
-      })
-    );
-  };
-
-  const handleTaskEditSave = (editTaskValue, taskId) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          return { ...task, text: editTaskValue };
-        } else {
-          return task;
-        }
-      })
-    );
+  const onAdd = () => {
+    handleAddTask(newTask);
+    setNewTask("");
   };
 
   return (
     <>
       <input
-        onKeyDown={(e) => (e.key === "Enter" ? handleAddTask() : null)}
+        onKeyDown={(e) => (e.key === "Enter" ? onAdd() : null)}
         value={newTask}
         type="text"
         onChange={(e) => {
           setNewTask(e.target.value);
         }}
       />
-      <button onClick={handleAddTask}>Add Task</button>
+      <button onClick={onAdd}>Add Task</button>
       <ul>
         {tasks.map((task) => (
           <TaskItem
@@ -77,6 +40,11 @@ function App() {
           />
         ))}
       </ul>
+      {tasks.length === 0 && (
+        <p style={{ textAlign: "center", color: "#888", marginTop: "20px" }}>
+          No tasks yet. Add one above!
+        </p>
+      )}
     </>
   );
 }
